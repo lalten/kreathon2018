@@ -101,9 +101,10 @@ export class HereComponent implements OnInit {
 
     private addMarkerForContainer(container : Container){
       let m = new H.map.Marker({'lat' : container.coordinates.lat, 'lng' : container.coordinates.ltd});
-
+      container['obj_marker'] = m;
       //add to map
       this.map.addObject(m);
+     
     }
 
     private addMarkerForRoute(){
@@ -122,6 +123,16 @@ export class HereComponent implements OnInit {
       this.makeMarkerDragable(m);
 
       //add to route
+      this.route_marker.push(m);
+    }
+
+    private addRouteHighlightMarker(lat, lng){
+      let icon = new H.map.Icon("https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png", {size: {w: 32, h: 32}});
+      let m = new H.map.Marker({'lat' : lat, 'lng' : lng}, {icon : icon});
+
+      //add to map
+      this.map.addObject(m);
+
       this.route_marker.push(m);
     }
 
@@ -163,8 +174,25 @@ export class HereComponent implements OnInit {
       this.addMarkerForRoute();
     }
 
-    private calculateRoute(params){
+
+
+    private calculateRoute(params, container){
       var that = this;
+
+      //Clear and redraw
+      for(var i = 0; i < this.container.length; i++){
+        //First remove
+        try {
+          this.map.removeObject(this.container[i]['obj_marker']);
+        }
+        catch(e){
+          console.log(e);
+        }
+        
+
+        //Then add new one
+        this.addMarkerForContainer(this.container[i]);
+      }
 
       return new Promise((resolve, reject) => {
           //Calculate route
@@ -182,7 +210,7 @@ export class HereComponent implements OnInit {
                   }
                 }
                 
-                resolve({directions : dirs , length : length, data : data.response.route[0]});
+                resolve({directions : dirs , length : length, data : data.response.route[0], container : container});
             }
 
             
@@ -204,7 +232,7 @@ export class HereComponent implements OnInit {
         'representation': 'display'
       };
 
-      return this.calculateRoute(params);
+      return this.calculateRoute(params, container);
      
     }
 
@@ -216,6 +244,7 @@ export class HereComponent implements OnInit {
         let min = 1000000;
         let best = {};
         let edited = [];
+        let best_container = {};
 
 
         this.container.forEach(function(container){
@@ -242,7 +271,10 @@ export class HereComponent implements OnInit {
       
     }
 
-    private displayRoute(length, directions, data){
+    private displayRoute(length, directions, data, container){
+      this.map.removeObject(container['obj_marker']);
+      this.addRouteHighlightMarker(container.coordinates.lat, container.coordinates.ltd);
+
       let lineString = new H.geo.LineString();
       data.shape.forEach(point => {
           let parts = point.split(",");
@@ -275,7 +307,7 @@ export class HereComponent implements OnInit {
       }
 
       this.getMinRoute().then(function(route){
-        that.displayRoute(route['length'], route['directions'], route['data']);
+        that.displayRoute(route['length'], route['directions'], route['data'], route['container']);
       });
     }
 
