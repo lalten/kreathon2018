@@ -2,9 +2,9 @@
 
 import paho.mqtt.client as mqtt
 
-from backend.models import Measurement, Container
 import django
 django.setup()
+from backend.models import Measurement, Container
 
 """This class subscribes to a MQTT topic and receives measurements from the sensors. These values are then written
 into the database"""
