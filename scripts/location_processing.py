@@ -172,6 +172,11 @@ p[91]="51.320091,6.552320"
 p[96]="51.341310,6.599210"
 
 
+for id in p:
+    l = p[id].replace(' ', '')
+    #print "new Container(%i, 0, 0, new Coordinate(%s), 'asd')," % (id, l)
+    print str(id) + ':' + str(l) + ':' + locations[id]
+
 # ofile = file('poses.txt', 'aw')
 #
 #

@@ -1,0 +1,64 @@
+1:51.33608,6.63602:Hafenstraße, ecke Kreuzweg (Parkplatz)
+2:51.348621,6.64751:Mündelheimer Straße, höhe HNr 50/52
+3:50.221108,8.621942:Bahnhofstraße, höhe Bahnhof Uerdingen
+4:51.36249,6.62339:Breslauer Straße, ecke Oderstr.
+5:51.36316,6.59766:Zwingenbergstraße, ecke Wallerspfad (Parkplatz)
+8:51.3358,6.64371:Danziger Platz, Höhe HNr 1 ( Schwimmbad )
+9:51.330259,6.545865:Gutenbergstraße, höhe EKZ Parkplatz
+10:51.3165,6.57619:Kölner Straße, Ecke Untergath / Hochhaus
+12:51.339211,6.55931:Sternstraße, höhe HNr 45 (Plus)
+15:51.34465,6.54805:Moritzplatz, ecke Girmesgath
+17:51.339626,6.617302:Glindholzstraße, Höhe Rathaus
+18:51.32936,6.62697:Heinrich-Malina-Straße, ecke Bischofstraße (Parkbucht)
+19:51.31898,6.62664:Hauptstraße, ecke Michael Kivelitz Str.
+21:51.316460,6.602660:Langen Donk, ecke Fungendonk
+23:51.319230,6.588010:Oberbruchstraße, ecke Siemesdyk
+25:51.322891,6.580700:Fütingsweg, höhe HNr 20
+26:51.316500,6.576190:Kölner Straße, Ecke Untergath / Hochhaus
+28:51.312031,6.558730:Obergath, ecke Wehrhahnweg 39a
+29:51.308300,6.565790:Remscheider Straße, höhe HNr. 42
+30:51.308690,6.589100:Hafelsstraße, Ecke Kimplerstraße / am Kindergarten
+31:51.305210,6.583580:Marienplatz, ecke Altmühlenfeld
+33:51.303040,6.580220:Erkelenzer Straße, ecke Bergheimer Straße
+34:51.294910,6.586550:Weidenröschenweg, ecke Willicherstr.
+35:51.316479,6.589900:Von-Ketteler-Straße, höhe HNr 150 (Bahnübergang)
+36:51.331768,6.578997:Hardenbergstraße, ecke Viktoriastr.
+38:51.345242,6.590920:Friedrich-Ebert-Straße, in der Stichstraße zu Hs. Nr. 150
+39:51.343110,6.568970:Grüner Dyk, ecke Humboldtstr.
+40:51.334660,6.563870:Königstraße, am Seidenweberhaus
+43:51.330220,6.565961:Dreikönigenstraße, ecke Peterstraße (Parkplatz)
+44:51.318310,6.561890:Seyffardtstraße, höhe HNr 81 / Bunker
+45:51.333940,6.600560:Schönwasserstraße, Parkbucht höhe Aldi
+46:51.336491,6.570110:Steckendorfer Straße, ecke Bleichpfad
+48:51.335980,6.556940:Nordwall, ecke Westwall
+50:51.334492,6.565060:St.-Anton-Straße, ecke Prinz Ferdinant Str.
+51:51.320970,6.546540:Baackesweg, ecke Gripswaldstr.
+52:51.321080,6.527850:Dülkener Straße, höhe Kaldenkirchener Str.
+53:51.329960,6.536940:Obergplatz, ecke Fürstenbergstraße
+54:51.344067,6.552482:Joachimstraße, ecke Inratherstr. (Kirche)
+55:51.349869,6.552332:Wilmendyk, höhe Altenheim
+56:51.346430,6.545919:Hülser Straße, höhe Weyerhofstr.
+57:51.452205,6.638454:Klever Straße, Einfahrt Friedhof Parkplatz
+64:51.351270,6.650410:Düsseldorfer Straße, ecke Am Obertor
+65:51.333450,6.572000:Neue Linner Straße, ecke Philadelphiastr.
+66:51.325859,6.557780:Corneliusstraße, Ecke Corneliusplatz
+67:51.338820,6.574970:Bismarckplatz, ecke Viktoriastr.
+69:51.363541,6.614750:Insterburger Platz, höhe HNr 3
+71:51.320389,6.563060:Lutherplatz, geg. Hs. Nr. 30
+73:51.329617,6.670257:Düsseldorfer Straße, Lanker Straße
+75:51.331713,6.679759:Legionstraße, Hs. Nr. 118 (Wendehammer)
+76:51.337009,6.660000:Weidenbruchweg, höhe HNr 125
+77:51.344158,6.641220:Carl-Sonnenschein-Straße, höhe HNr 61
+78:51.358160,6.646050:Hochstadenstraße, Ecke Langestr,
+79:51.362070,6.573890:Heyenfeldweg, ecke Heidedyck
+80:51.336460,6.547930:Westparkstraße, höhe HNr. 30-32
+82:51.340721,6.537810:De-Greiff-Straße, Geologischer Dienst
+83:51.334301,6.546460:Bückerfeldstraße, höhe Kempener Allee
+84:51.348358,6.527010:Dieselstraße, höhe HNr.91-95
+85:51.347480,6.520020:Benrader Straße, höhe Altenheim
+86:51.363708,6.521440:Bruckersche Straße, Hs. Nr. 204
+88:51.370293,6.497376:Lobbericher Straße, ecke Reepenweg
+90:51.371940,6.497830:Leidener Straße, ecke Dünkirchener Straße
+91:51.320091,6.552320:Alte Gladbacher Str.36, Höhe Haus Nr. 36
+96:51.341310,6.599210:Uerdinger Straße, Zoo Parkplatz
+
