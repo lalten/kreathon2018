@@ -1,0 +1,14 @@
+#map {
+    width: 80%;
+    height: 80%;
+
+    margin-top: 100px;
+    float: left;
+}
+
+#action_wrapper {
+    width: 15%;
+    float: left;
+    height: 50%;
+}
+
