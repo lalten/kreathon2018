@@ -1,11 +1,32 @@
 #! /usr/bin/python
 
+
+""" This File contains the Backend. The program offers different REST-API-Endpoints so that the webserver and the
+telegram App can read and send data from and to the Database. The database (a sqlite-db) is attached using Django.
+
+The Following interfaces are available:
+/get_best:
+    Expects a position in the latitude/longitude foremat (in 'lat', 'lng') and returns the closest Container that is
+    not full. This is used by the chatbot when the user asks for the closest Container
+
+/get_closest:
+    Similar to get_best but returns the closest Container even though it is full. This function is used when the user
+    wants to give a feedback about the cleanliness and should of course have the possibility to rate a full Container.
+
+/containers:
+    Returns a list of all Containers with their pose, (gps and human readable), their fill level and cleanliness
+
+/feedback:
+    Interface to write a users feedback about the cleanliness of a container into the database.
+
+"""
+
 import django
 django.setup()
 from geopy.distance import distance
 
 from backend.models import Container, Measurement, Feedback, User
-
+from copy import deepcopy
 import flask
 from flask import Flask, Response
 from flask_restful import Api, Resource, reqparse, request
@@ -86,11 +107,11 @@ def get_best_container():
 
         if min_dist < 0 or d_sum < min_dist:
             min_dist = d_sum
-            closest_container_id = c['id']
+            closest_container_id = deepcopy(c['id'])
             best_pos = c_pos
 
     answer = dict()
-    answer['dist'] = min_dist
+    answer['dist'] = d_sum
     answer['closest_container_id'] = closest_container_id
     answer['closest_container_pos'] = best_pos
     answer['location_string'] = Container.objects.get(id=closest_container_id).location_string
@@ -102,11 +123,11 @@ def get_best_container():
 @app.route('/get_closest', methods=['POST'])
 def get_closest_container():
     d = request.form
-    user, created = User.objects.get_or_create(id=d['user_id'])
-    user.first_name = d['first_name']
-    user.save()
+    # user, created = User.objects.get_or_create(id=d['user_id'])
+    # user.first_name = d['first_name']
+    # user.save()
 
-    print user, created
+    # print user, created
     lat, lng = d['lat'], d['lng']
 
     feedback_pos = (lat, lng)
@@ -118,11 +139,9 @@ def get_closest_container():
     min_dist = -1
     closest_container_id = -1
     for c in containers:
-        print (c.id)
-
         container_pos = (c.lat, c.lng)
         dist = distance(feedback_pos, container_pos).m
-        print "meters", dist
+        # print "meters", dist
 
         # d = pow(lat-c.lat, 2) + pow(lng-c.lng, 2)
         if min_dist < 0 or dist < min_dist:
@@ -153,36 +172,9 @@ def store_feedback():
     user.first_name = d['first_name']
     user.save()
 
-    print d
-
     c = Container.objects.get(id=d['container_id'])
-
-
-    # print user, created
-    # lat, lng = d['lat'], d['lng']
-    #
-    # feedback_pos = (lat, lng)
-    #
-    # # get closest container:
-    # containers = Container.objects.all()
-    # print (len(containers))
-    # min_dist = -1
-    # best_id = -1
-    # for c in containers:
-    #     print (c.id)
-    #
-    #     container_pos = (c.lat, c.lng)
-    #     dist = distance(feedback_pos, container_pos).m
-    #     print "meters", dist
-    #
-    #     # d = pow(lat-c.lat, 2) + pow(lng-c.lng, 2)
-    #     if min_dist < 0 or dist < min_dist:
-    #         min_dist = dist
-    #         best_id = c.id
-
     f = Feedback(user=user, lat=c.lat, lng=c.lng, container_id=c.id, rating=d['clean'])
     f.save()
-    print "created new Feedback for container %i" % best_id
 
     response = flask.jsonify(dict())
     response.headers.add('Access-Control-Allow-Origin', '*')

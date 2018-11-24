@@ -7,5 +7,7 @@ export DJANGO_SETTINGS_MODUL=awesome_container.settings
 
 ## Datenbereinigung: ##
 
+Aus den bereitgestellten
+
 Container 24 hat zwei Standorte
 Altenheim vs. Seniorenheim bei Container 55

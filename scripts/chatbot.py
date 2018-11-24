@@ -1,13 +1,42 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+This file contains the telegram-based chatbot. We use telegram as they provide a feature-rich Interface in Python
+and provide end-to-end encryption and are not controlled by Facebook.
+
+The user can use these commands:
+
+/help:
+    Shows a help text that shows the other available commands
+
+/near:
+    Shows the user the way to the closes container (by foot) in an image. The bot will ask the user to send it's
+    location, uses the REST-API to get the closest (not-full) container and uses there HERE-API to create an image
+    with the path. It also gives the user the human readable location description
+
+/rate:
+    Offers an opportunity to rate the cleanliness of a Container. The user is again asked for it's location, and is
+    asked to confirm the location of the container that she wants to rate. The user can then choose on of several
+    feedback options which are then send to the Database through the REST-API. Only the pseudonomized telegram-id
+    of the user is stored with the Feedback.
+
+/no_blue:
+    With this commands, the user can signal that he does not want his personal blue container be emptied in the next
+    run as it is not yet half full.
+
+
+"""
+
+
+
 from __future__ import division
 
 import logging
 import re
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, RegexHandler,
                           ConversationHandler)
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
+from telegram import Update,Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 import requests
 
@@ -38,6 +67,7 @@ class FirstChatBot:
 
         self.dispatcher.add_handler(CommandHandler("start", self.on_start))
         self.dispatcher.add_handler(CommandHandler("help", self.on_help))
+        self.dispatcher.add_handler(CommandHandler("no_blue", self.no_blue))
 
         conv_handler_nearest = ConversationHandler(
             entry_points=[CommandHandler("near", self.conv_nearest_start)],
@@ -60,7 +90,13 @@ class FirstChatBot:
         )
         self.dispatcher.add_handler(conv_handler_rate)
 
+    def no_blue(self, bot, update):
+        update.message.reply_text("Deine Blaue Tonne wird bei der naechsten Leerung nicht angefahren! "
+                                  "Vielen Dank fuer die Information")
+
     def conv_rate_start(self, bot, update):
+        print bot, update
+        print type(update.message)
         update.message.reply_text('Which container do you want to provide feedback for? '
                                   'Please send the location of the container you want to rate.')
         return 'LOCATION_RATE'
@@ -145,7 +181,7 @@ class FirstChatBot:
                      InlineKeyboardButton("Great \xF0\x9F\x91\x8F", callback_data='cl,3')]]
 
         reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text('How clean is the bootle bank?', reply_markup=reply_markup)
+        update.message.reply_text('How clean is the container?', reply_markup=reply_markup)
 
     def on_start(self, bot, update):
         """Send a message when the command /start is issued."""

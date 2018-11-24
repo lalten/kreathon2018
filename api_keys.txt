@@ -1,3 +1,6 @@
+
+# Zugangscodes fuer die HERE-API (kostenlos, also bitte eigenen generieren :)
+
 app_id = "nAX0YLEqe9rDAffuvS9L"
 app_code = "O_9Z4uw6cbqaUNKCrWvAlg"
 
