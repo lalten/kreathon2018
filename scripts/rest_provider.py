@@ -52,8 +52,8 @@ def get_container_info():
     return msg
 
 
-@app.route('/get_closest', methods=['POST'])
-def get_closest_container():
+@app.route('/get_best', methods=['POST'])
+def get_best_container():
     d = request.form
     # lat = d['lat']
     # lng = d['lng']
@@ -99,6 +99,46 @@ def get_closest_container():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+@app.route('/get_closest', methods=['POST'])
+def get_closest_container():
+    d = request.form
+    user, created = User.objects.get_or_create(id=d['user_id'])
+    user.first_name = d['first_name']
+    user.save()
+
+    print user, created
+    lat, lng = d['lat'], d['lng']
+
+    feedback_pos = (lat, lng)
+    best_pos = feedback_pos
+
+    # get closest container:
+    containers = Container.objects.all()
+    print (len(containers))
+    min_dist = -1
+    closest_container_id = -1
+    for c in containers:
+        print (c.id)
+
+        container_pos = (c.lat, c.lng)
+        dist = distance(feedback_pos, container_pos).m
+        print "meters", dist
+
+        # d = pow(lat-c.lat, 2) + pow(lng-c.lng, 2)
+        if min_dist < 0 or dist < min_dist:
+            min_dist = dist
+            closest_container_id = c.id
+            best_pos = [c.lat, c.lng]
+
+    answer = dict()
+    answer['dist'] = min_dist
+    answer['closest_container_id'] = closest_container_id
+    answer['closest_container_pos'] = best_pos
+    answer['location_string'] = Container.objects.get(id=closest_container_id).location_string
+
+    response = flask.jsonify({'closest_container': answer})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @app.route('/containers', methods=['GET'])
 def send_container():
@@ -113,27 +153,29 @@ def store_feedback():
     user.first_name = d['first_name']
     user.save()
 
-    print user, created
-    lat, lng = d['lat'], d['lng']
+    print d
 
-    feedback_pos = (lat, lng)
-
-    # get closest container:
-    containers = Container.objects.all()
-    print (len(containers))
-    min_dist = -1
-    best_id = -1
-    for c in containers:
-        print (c.id)
-
-        container_pos = (c.lat, c.lng)
-        dist = distance(feedback_pos, container_pos).m
-        print "meters", dist
-
-        # d = pow(lat-c.lat, 2) + pow(lng-c.lng, 2)
-        if min_dist < 0 or dist < min_dist:
-            min_dist = dist
-            best_id = c.id
+    # print user, created
+    # lat, lng = d['lat'], d['lng']
+    #
+    # feedback_pos = (lat, lng)
+    #
+    # # get closest container:
+    # containers = Container.objects.all()
+    # print (len(containers))
+    # min_dist = -1
+    # best_id = -1
+    # for c in containers:
+    #     print (c.id)
+    #
+    #     container_pos = (c.lat, c.lng)
+    #     dist = distance(feedback_pos, container_pos).m
+    #     print "meters", dist
+    #
+    #     # d = pow(lat-c.lat, 2) + pow(lng-c.lng, 2)
+    #     if min_dist < 0 or dist < min_dist:
+    #         min_dist = dist
+    #         best_id = c.id
 
     f = Feedback(user=user, lat=lat, lng=lng, container_id=best_id, rating=d['clean'])
     f.save()

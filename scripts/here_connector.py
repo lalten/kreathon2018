@@ -38,7 +38,7 @@ def route_to_image(route):
     app_data['lw'] = 10  # line width
 
     r = requests.get(route_url, app_data)
-    print (r.url)
+    # print (r.url)
 
     # print r.content
 
@@ -46,6 +46,8 @@ def route_to_image(route):
     f = open('/tmp/route.jpg', 'wb')
     f.write(r.content)
     f.close()
+
+    return r.url
 
 def calc_route(positions, mode='car'):
     app_data = {"app_id": app_id, "app_code": app_code}
