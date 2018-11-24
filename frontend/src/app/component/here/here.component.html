@@ -2,7 +2,8 @@
 
 <div id="right_wrapper">
   <button (click)="addRouteStart()">Punkt zu meiner Route hinzufügen</button>
-  <button (click)="calculateMyRoute()">Meine Route kalkulieren</button>
+  <button (click)="calculateMyRoute()">Meine Route berechnen</button>
+  <button (click)="roundTrip()">Roundtrip berechnen</button>
 
   <div *ngIf="instructions.length > 0" id="direction_wrapper">
     <h3>Route:</h3>

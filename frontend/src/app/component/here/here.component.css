@@ -6,7 +6,7 @@
 }
 
 #right_wrapper {
-    width: 15%;
+    width: 10%;
     height: 50%;
     float: left;
     margin-left: 70px;
@@ -39,11 +39,4 @@
     padding-bottom:  20px;
 }
 
-.H_ib {
-    border-radius: 10px;
-    background: white !important;
-    fill: white !important;
-    color: black !important;
-    border: 2px solid black;
-    padding: 10px;
-}
+

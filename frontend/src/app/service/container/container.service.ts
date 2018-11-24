@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 import {map, catchError} from "rxjs/operators";
 
 import { Observable, throwError } from 'rxjs';
+import { of } from 'rxjs';
 
 import {Container} from '../../model/container';
 
@@ -15,7 +16,7 @@ import {Coordinate} from '../../model/coordinate';
 })
 export class ContainerService {
 
-  /*private test_data : Container[] = [  
+  private test_data : Container[] = [  
       new Container(1, 0, 0, new Coordinate(51.33608,6.63602), 'asd'),
       new Container(2, 0, 0, new Coordinate(51.348621,6.64751), 'asd'),
       new Container(3, 0, 0, new Coordinate(50.221108,8.621942), 'asd'),
@@ -79,7 +80,7 @@ export class ContainerService {
       new Container(90, 0, 0, new Coordinate(51.371940,6.497830), 'asd'),
       new Container(91, 0, 0, new Coordinate(51.320091,6.552320), 'asd'),
       new Container(96, 0, 0, new Coordinate(51.341310,6.599210), 'asd')
-  ]; */
+  ]; 
 
   
 
@@ -136,6 +137,10 @@ export class ContainerService {
     ); */
      
 
-  } 
+  }
+  
+  public getRoundRouteData() : Observable<Container[]> {
+    return of(this.test_data);
+  }
   
 }

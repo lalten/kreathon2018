@@ -33,9 +33,10 @@ export class HereComponent implements OnInit {
     private group;
     private is_route : boolean = false;
     private instructions = [];
+    private abholen = [];
 
 
-    //config
+    //config for here
     appId: any = "nAX0YLEqe9rDAffuvS9L";
     appCode: any = "O_9Z4uw6cbqaUNKCrWvAlg";
 
@@ -43,11 +44,11 @@ export class HereComponent implements OnInit {
     lat: any = "51.33276";
     lng: any = "6.58217";
 
+    //This is for inteveral (automatic reload)
     subscription: Subscription;
 
 
-  
-
+    //constructor
     public constructor(private containerService : ContainerService) {
         var that = this;
 
@@ -55,10 +56,9 @@ export class HereComponent implements OnInit {
             "app_id": "nAX0YLEqe9rDAffuvS9L",
             "app_code": "O_9Z4uw6cbqaUNKCrWvAlg"
         });
-
-        
     }
 
+    //onInit
     public ngOnInit() { 
        //create here platfrom
        this.platform = new H.service.Platform({
@@ -69,6 +69,7 @@ export class HereComponent implements OnInit {
       this.router = this.platform.getRoutingService();
     }
 
+    //After init
     public ngAfterViewInit() {
       var that = this; //js stuff :D
 
@@ -100,24 +101,20 @@ export class HereComponent implements OnInit {
 
     }
 
-    /*private loadContainer(){
-      var that = this;
-
-      if(this.is_route){
-        return;
-      }
-    
-      this.containerService.getContainer().subscribe(function(container){
-        
-      });
-    } */
-
+    //parse container dat
     private parseContainer(context, container) {
-        
+        if(this.is_route){
+          return;
+        }  
+
         context.clearContainer();
 
         for(var i = 0; i < container['containers'].length; i++){
           var item = container['containers'][i];
+          if(item.id == 2){
+            console.log(item['level']);
+          }
+          
           let c : Container = new Container(item.id, item.clean, item['level'], new Coordinate(item['lat'], item['lng']), item['loc_str']);
           context.container.push(c)
         }
@@ -126,6 +123,7 @@ export class HereComponent implements OnInit {
         context.renderContainer();
     }
 
+    //delete container data
     private clearContainer(){
       if(this.container.length > 0){
         for(var i = 0; i < this.container.length; i++){
@@ -136,6 +134,7 @@ export class HereComponent implements OnInit {
       this.container = [];
     }
 
+    //render container data
     private renderContainer(){
       var that = this;
 
@@ -144,6 +143,7 @@ export class HereComponent implements OnInit {
       });
     }
 
+    //Add a marker for a container
     private addMarkerForContainer(container : Container){
       var that = this;
 
@@ -167,20 +167,11 @@ export class HereComponent implements OnInit {
         url = "./assets/marker_empty.png"
       }
 
-      //Add group and icon
-     // var group = new H.map.Group();
-      
-
-      //add group to map
-     // this.map.addObject(group);
-
       //create icon
       var icon = new H.map.Icon(url, {size: {w: 32, h: 32}});
 
       let m = new H.map.Marker({'lat' : container.coordinates.lat, 'lng' : container.coordinates.ltd}, {icon : icon});
 
-
-      //Set marker data
       //set marker data
       this.setMarkerData(m, container);
 
@@ -195,22 +186,20 @@ export class HereComponent implements OnInit {
         
       }, false);
 
-     
-
-
       container['obj_marker'] = m;
+
       //add to map
       this.map.addObject(m);
      
     }
 
+    //Add Bubble popup 
     private setMarkerData(marker, container){
-      var html = "<div class='bubble'><h3>" + container.street + "</h3><dl><dt>ID:</dt><dd>" + container.id + "</dd><dt>Voll:</dt><dd>" + container.full + "%</dd><dt>Sauber:</dt><dd>" + container.clean + "</dd></dl></div>"
-      //var html ='<div><a href=\'http://www.mcfc.co.uk\' >Manchester City</a>' +
-      //  '</div><div >City of Manchester Stadium<br>Capacity: 48,000</div>';
+      var html = "<div class='bubble'><h3>" + container.street + "</h3><dl><dt>ID:</dt><dd>" + container.id + "</dd><dt>Voll:</dt><dd>" + container.full + "%</dd><dt>Sauber:</dt><dd>" + container.clean + "</dd></dl></div>";
       marker.setData(html);
     }
 
+    //Add this marker
     private addMarkerForRoute(){
       if(this.route_marker.length >= 2){
         return;
@@ -230,6 +219,7 @@ export class HereComponent implements OnInit {
       this.route_marker.push(m);
     }
 
+    //Add route highlight
     private addRouteHighlightMarker(lat, lng){
       let icon = new H.map.Icon("https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png", {size: {w: 32, h: 32}});
       let m = new H.map.Marker({'lat' : lat, 'lng' : lng}, {icon : icon});
@@ -240,7 +230,7 @@ export class HereComponent implements OnInit {
       this.route_marker.push(m);
     }
 
-
+    //set a marker as dragable
     private makeMarkerDragable(marker){
       var that = this;
       
@@ -273,13 +263,12 @@ export class HereComponent implements OnInit {
       }, false);
     }
 
+    //Start for a route
     private addRouteStart(){
-      //this.addDragableMarker(new Coordinate(this.lat, this.lng));
       this.addMarkerForRoute();
     }
 
-
-
+    //calculate the route for a given cocntainer
     private calculateRoute(params, container){
       var that = this;
 
@@ -293,7 +282,6 @@ export class HereComponent implements OnInit {
           console.log(e);
         }
         
-
         //Then add new one
         this.addMarkerForContainer(this.container[i]);
       }
@@ -328,10 +316,10 @@ export class HereComponent implements OnInit {
       });
     }
 
+    //wrapper function for adding params
     private calculateRouteWithContainer(container : Container){
        //Basic params
        var params = {
-        //be fast
         'waypoint0' : 'geo!' + this.route_marker[0].getPosition().lat + ',' + this.route_marker[0].getPosition().lng,
         'waypoint1' : 'geo!' + container.coordinates.lat + ',' + container.coordinates.ltd,
         'waypoint2' : 'geo!' + this.route_marker[1].getPosition().lat + ',' + this.route_marker[1].getPosition().lng,
@@ -343,34 +331,29 @@ export class HereComponent implements OnInit {
      
     }
 
+    //get minimum route
     private getMinRoute(){
       var that = this;
-     
-      
+
       return new Promise((resolve, reject) => {
         let min = 1000000;
         let best = {};
         let edited = [];
         let best_container = {};
 
-
         this.container.forEach(function(container){
             if(container.full < 95){
-            console.log("it is smaller");
 
             that.calculateRouteWithContainer(container).then(function(result){
               edited.push(result);
 
-              console.log(result['length']);
               if(result['length'] > 0 && result['length'] < min){
                 
                 min = result['length'];
                 best = result;
-                console.log("Min setted: " + min);
               }
 
               if(edited.length == that.container.length){
-                console.log(min);
                 resolve(best);
               }
             });
@@ -379,12 +362,11 @@ export class HereComponent implements OnInit {
             edited.push({})
           }
         });
-
-       
       });
       
     }
 
+    //display a route on map
     private displayRoute(length, directions, data, container, instructions){
       this.map.removeObject(container['obj_marker']);
       this.addRouteHighlightMarker(container.coordinates.lat, container.coordinates.ltd);
@@ -414,8 +396,10 @@ export class HereComponent implements OnInit {
       this.instructions = instructions;
     }
 
+    //start for route calculation
     private calculateMyRoute(){
       var that = this;
+
 
       if(this.route_marker.length < 2){
         alert("No start or destination");
@@ -429,7 +413,69 @@ export class HereComponent implements OnInit {
       });
     }
 
+    //get the best route
+    private calculateBestRoute(){
+      this.container.forEach(function(container){
+        if(container.full > 95){
+          this.abholen.push(container);
+        }
+      });
+    }
 
+    //show the round trip
+    private  display_round_trip(container){
+      var params = {
+        //be fast
+        'mode': 'shortest;car',
+        'representation': 'display'
+      };
+      
+      container.forEach(function(c, idx){
+        params['waypoint' + idx] = 'geo!' + c.coordinates.lat + ',' + c.coordinates.ltd;
+      });
 
+      console.log(params);
+      this.router.calculateRoute(params, data => {
+        if(data.response){
+          let lineString = new H.geo.LineString();
+          data = data.response.route[0];
+          data.shape.forEach(point => {
+              let parts = point.split(",");
+              lineString.pushLatLngAlt(parts[0], parts[1]);
+          });
+    
+          let lines = new H.map.Polyline(lineString, {
+              style: { strokeColor: "blue", lineWidth: 5 }
+          });
+    
+          if(!this.group){
+            this.group = new H.map.Group();
+            this.map.addObject(this.group);
+          }
+          else{
+            this.group.removeAll();
+          }
+          
+          //Add
+          this.group.addObjects([lines]);
+          this.map.setViewBounds(this.group.getBounds());
+        }
+
+        
+      }, error => {
+        console.error(error);
+        return {directions : {}, length : -1, data : null}
+    });
+
+  }
+
+  //listener for the round trip
+  private roundTrip(){
+    var that = this;
+    this.containerService.getRoundRouteData().subscribe(function(data){
+      console.log(data);
+      that.display_round_trip(data);
+    });
+  }
 }
 
