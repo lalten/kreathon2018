@@ -1,17 +1,21 @@
-import { Injectable } from '@angular/core';
-import {Observable,of, from } from 'rxjs';
-import {Container} from '../../model/container';
-import { HttpErrorHandlerService, HandleError } from '../http/http-error-handler.service'
-import { HttpClient, HttpHeaders} from '@angular/common/http';
-import { Coordinate } from '../../model/coordinate';
 
+import { HttpErrorHandlerService, HandleError } from '../http/http-error-handler.service';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import {map, catchError} from "rxjs/operators";
+
+import { Observable, throwError } from 'rxjs';
+
+import {Container} from '../../model/container';
+
+import {Coordinate} from '../../model/coordinate';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContainerService {
 
-  private test_data : Container[] = [  
+  /*private test_data : Container[] = [  
       new Container(1, 0, 0, new Coordinate(51.33608,6.63602), 'asd'),
       new Container(2, 0, 0, new Coordinate(51.348621,6.64751), 'asd'),
       new Container(3, 0, 0, new Coordinate(50.221108,8.621942), 'asd'),
@@ -75,7 +79,7 @@ export class ContainerService {
       new Container(90, 0, 0, new Coordinate(51.371940,6.497830), 'asd'),
       new Container(91, 0, 0, new Coordinate(51.320091,6.552320), 'asd'),
       new Container(96, 0, 0, new Coordinate(51.341310,6.599210), 'asd')
-  ];
+  ]; */
 
   
 
@@ -100,8 +104,38 @@ export class ContainerService {
   //handlers
   private handleError: HandleError;
   
+
+  private responseToContainer(response) : Container[] {
+    let result : Container[] = [];
+
+    response.forEach(function(item){
+      let c : Container = new Container(item.id, item.clean, item.level, new Coordinate(item.lat, item.lng), item.loc_tr);
+      result.push(c)
+    });
+
+    return result;
+
+  }
+
   public getContainer() : Observable<Container[]> {
-    return of(this.test_data);
+    return this.http.get<Container[]>('/containers');
+
+   
+   /* .map((response : any[]) => {
+      let result : Container[] = [];
+
+      response.forEach(function(item){
+        let c : Container = new Container(item.id, item.clean, item.level, new Coordinate(item.lat, item.lng), item.loc_tr);
+        result.push(c)
+      });
+
+      return result;
+    })
+    .pipe(                                                                            
+      catchError(this.handleError('load_container', []))
+    ); */
+     
+
   } 
   
 }

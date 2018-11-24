@@ -1,0 +1,10 @@
+{                                                                                         
+"/containers": {
+"target": "http://10.13.144.90:5000/containers",
+"secure": false,
+ "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/containers": ""
+    }
+}}

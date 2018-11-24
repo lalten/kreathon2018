@@ -24,7 +24,7 @@ export class HereComponent implements OnInit {
     private router: any;
 
     //private class data
-    private container : Container[];
+    private container : Container[] = [];
     private route_marker = [];
     private directions = [];
     private group;
@@ -86,9 +86,17 @@ export class HereComponent implements OnInit {
       
      //load container
       this.containerService.getContainer().subscribe(function(container){
-        that.container = container;
+        for(var i = 0; i < container['containers'].length; i++){
+          var item = container['containers'][i];
+          let c : Container = new Container(item.id, item.clean, item['level'], new Coordinate(item['lat'], item['lng']), item['loc_tr']);
+          that.container.push(c)
+        }
+
+        
         that.renderContainer();
       });
+
+    
     }
 
     private renderContainer(){
@@ -100,11 +108,13 @@ export class HereComponent implements OnInit {
     }
 
     private addMarkerForContainer(container : Container){
+      var that = this;
+
       var url;
       if(container.full > 95){
         url = "./assets/marker_full.png"
       }
-      if(container.full > 80){
+      else if(container.full > 80){
         url = "./assets/marker_80.png"
       }
       else if(container.full > 60){
@@ -119,14 +129,55 @@ export class HereComponent implements OnInit {
       else {
         url = "./assets/marker_empty.png"
       }
+
+      //Add group and icon
+     // var group = new H.map.Group();
       
+
+      //add group to map
+     // this.map.addObject(group);
+
+      //create icon
       var icon = new H.map.Icon(url, {size: {w: 32, h: 32}});
 
       let m = new H.map.Marker({'lat' : container.coordinates.lat, 'lng' : container.coordinates.ltd}, {icon : icon});
+
+
+      //Set marker data
+      //set marker data
+      this.setMarkerData(m, container);
+
+      m.addEventListener('tap', function (evt) {
+        var bubble =  new H.ui.InfoBubble(evt.target.getPosition(), {
+          // read custom data
+          content: evt.target.getData()
+        });
+        // show info bubble
+        that.ui.addBubble(bubble);
+        bubble.open();
+        console.log(bubble);
+        
+      }, false);
+
+      //create marker
+
+      
+
+      //add to group
+      //group.addObject(m);
+
+
       container['obj_marker'] = m;
       //add to map
       this.map.addObject(m);
      
+    }
+
+    private setMarkerData(marker, container){
+      var html = "<div><h3>" + container.loc_tr + "</h3><dl><dt>ID:</dt><dd>" + container.id + "</dd><dt>Voll:</dt><dd>" + container.full + "%</dd><dt>Sauber:</dt><dd>" + container.clean + "</dd></dl></div>"
+      //var html ='<div><a href=\'http://www.mcfc.co.uk\' >Manchester City</a>' +
+      //  '</div><div >City of Manchester Stadium<br>Capacity: 48,000</div>';
+      marker.setData(html);
     }
 
     private addMarkerForRoute(){
@@ -270,6 +321,9 @@ export class HereComponent implements OnInit {
 
 
         this.container.forEach(function(container){
+            if(container.full < 95){
+            console.log("it is smaller");
+
             that.calculateRouteWithContainer(container).then(function(result){
               edited.push(result);
 
@@ -286,6 +340,10 @@ export class HereComponent implements OnInit {
                 resolve(best);
               }
             });
+          }
+          else {
+            edited.push({})
+          }
         });
 
        

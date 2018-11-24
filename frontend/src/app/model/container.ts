@@ -15,6 +15,6 @@ export class Container {
         this.full = full;
         this.coordinates = coordinate;
         this.street = street;
-        this.full = (100 * Math.random()); //Testing purposes
+        //this.full = (100 * Math.random()); //Testing purposes
     }
 }
