@@ -18,13 +18,13 @@ class SendMissingMqttNodes:
         self.client = mqtt.Client()
         self.client.connect(SendMissingMqttNodes.broker_url, SendMissingMqttNodes.broker_port)
         self.client.loop_start()
-        self.fill_level = np.zeros((101,1))
+        self.fill_level = np.zeros((101, 1))
 
     def spin(self):
         try:
             while True:
                 for sensor_id in range(5, 101):
-                    self.fill_level[sensor_id] += 10 * random.random()
+                    self.fill_level[sensor_id] += 100 * random.random()
                     self.fill_level[sensor_id] = min(self.fill_level[sensor_id], 1000)
                     if self.fill_level[sensor_id] == 1000:
                         self.fill_level[sensor_id] = 0  # just reset to zero for now
@@ -33,7 +33,7 @@ class SendMissingMqttNodes:
                     this_fill_level = int(round(self.fill_level[sensor_id]))
                     payload_str = '{}_{}_{}_{}\n'.format(sensor_id, this_fill_level, range_status, bat_mv)
                     self.client.publish(SendMissingMqttNodes.measurement_topic, payload_str)
-                time.sleep(5)
+                time.sleep(1)
         except KeyboardInterrupt:
             pass
 

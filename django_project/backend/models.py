@@ -37,6 +37,7 @@ class Container(models.Model):
                                                                 self.reading_sonic_empty,
                                                                 self.reading_sonic_full)
 
+
 class Measurement(models.Model):
     container = models.ForeignKey(Container, on_delete=models.CASCADE)
     raw_reading = models.FloatField(default=-1)
