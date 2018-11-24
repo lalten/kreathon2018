@@ -71,14 +71,14 @@ def get_positions(route):
 
 def calc_route(positions):
     app_data = {"app_id": app_id, "app_code": app_code}
-    app_data['mode'] = 'fastest;car;traffic:disabled'
+    app_data['mode'] = 'fastest;pedestrian;traffic:disabled'
 
     for i, p in enumerate(positions):
         app_data['waypoint' + str(i)] = p
         if i == 10:
             break
 
-    print (app_data)
+    # print (app_data)
     r = requests.get(calc_route_url, app_data)
     # print r.status_code
     # print r.json()
@@ -88,11 +88,37 @@ def calc_route(positions):
 
 positions = get_positions(monday_route)
 
-route = calc_route(positions)
 
-print route
+start=positions[10]
+for i, p in enumerate(positions):
+    # if i == 0:
+    #     continue
+    # print start, p
 
-route_to_image(route)
+    r = calc_route([start, p])
+    d_sum = 0
+    for m in r['response']['route'][0]['leg'][0]['maneuver']:
+        d_sum += m['length']
+
+    print d_sum
+
+
+    # break
+
+
+
+
+
+
+
+
+
+
+# route = calc_route(positions)
+#
+# print route
+#
+# route_to_image(route)
 
 #
 #
