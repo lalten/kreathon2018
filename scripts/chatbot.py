@@ -1,27 +1,17 @@
-#! /usr/bin/python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import os
+from __future__ import division
+
 import logging
-from telegram.ext import Updater, MessageHandler, Filters, CommandHandler, CallbackQueryHandler
-from telegram import Update
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+import re
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, RegexHandler,
+                          ConversationHandler)
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ReplyKeyboardMarkup, KeyboardButton
 
 import requests
 
-# class TransportationMode:
-#     FOOT = 1
-#     CAR = 2
-#
-#     def __init__(self):
-#         pass
-
-# class Conversation:
-#     def __init__(self, user_id, mode=TransportationMode.FOOT):
-#         self.user_id = user_id
-#         self.mode = mode
-#
-#     def __str__(self):
-#         return str(self.user_id) + ': ' + FirstChatBot._transport_mode_to_string(self.mode)
+from here_connector import calc_route, route_to_image
 
 
 class FirstChatBot:
@@ -45,34 +35,107 @@ class FirstChatBot:
 
         self.dispatcher = self.updater.dispatcher
 
-        self.dispatcher.add_handler(CommandHandler("start", self.start))
-        # self.dispatcher.add_handler(CommandHandler("mode", self.ask_for_mode))
-        self.dispatcher.add_handler(CommandHandler("help", self.show_help))
+        self.dispatcher.add_handler(CommandHandler("start", self.on_start))
+        self.dispatcher.add_handler(CommandHandler("help", self.on_help))
 
-        self.dispatcher.add_handler(MessageHandler(Filters.text, self.text_cb))
-        self.dispatcher.add_handler(MessageHandler(Filters.location, self.got_location))
-        self.updater.dispatcher.add_handler(CallbackQueryHandler(self.mode_button_cb))
+        conv_handler_nearest = ConversationHandler(
+            entry_points=[CommandHandler("near", self.conv_nearest_start)],
+            states={
+                'LOCATION_NEAR': [MessageHandler(Filters.location, self.conv_nearest_loc)]
+            },
+            fallbacks=[]
+        )
+        self.dispatcher.add_handler(conv_handler_nearest)
 
-        self.get_containers()
+        self.rate_container_id = 0
+        conv_handler_rate = ConversationHandler(
+            entry_points=[CommandHandler("rate", self.conv_rate_start)],
+            states={
+                'LOCATION_RATE': [MessageHandler(Filters.location, self.conv_rate_loc)],
+                'CONFIRM': [MessageHandler(Filters.text, self.conv_rate_confirm)],
+                'RATE': [MessageHandler(Filters.text, self.conv_rate_done)]
+            },
+            fallbacks=[MessageHandler(Filters.all, self.conv_rate_stop)]
+        )
+        self.dispatcher.add_handler(conv_handler_rate)
 
-    def get_containers(self):
-        response = requests.get(self.rest_url, [])
-        print response.json()['containers'][0]
+    def conv_rate_start(self, bot, update):
+        update.message.reply_text('Which container do you want to provide feedback for? '
+                                  'Please send the location of the container you want to rate.')
+        return 'LOCATION_RATE'
 
-    def show_help(self, bot, update):
-        update.message.reply_text('Welcome! \n'
-                                  'use these commands: \n'
-                                  '- /mode to select transportation mode \n'
-                                  '- send location to request route')
+    def conv_rate_stop(self, bot, update):
+        update.message.reply_text(u'Sorry, I don\'t understand 😟. If you want to try again, use the /rate command ☝️.')
+        return ConversationHandler.END
 
-    # @staticmethod
-    # def _transport_mode_to_string(mode):
-    #     mode = int(mode)
-    #     if mode == TransportationMode.FOOT:
-    #         return "By Foot"
-    #     if mode == TransportationMode.CAR:
-    #         return "By Car"
-    #     return "Unknown transportation mode " + str(mode)
+    def conv_rate_loc(self, bot, update):
+        user_location = update.message.location
+        url = 'http://10.13.144.90:5000/get_closest'
+        data_dict = {"lat": user_location.latitude, 'lng': user_location.longitude}
+        response = requests.post(url, data_dict)
+        container = response.json()['best_container']
+        self.rate_container_id = container['closest_container_id']
+        descr = container['location_string'].rstrip()
+        reply_keyboard = [[KeyboardButton(u"Yes 👌"), KeyboardButton(u"No 🚫")]]
+        update.message.reply_text(u'The container closest to that location is #{} at {}. Is that the one you want to rate?'.format(self.rate_container_id, descr),
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
+        return 'CONFIRM'
+
+    def conv_rate_confirm(self, bot, update):
+        if 'No' in update.message.text:
+            update.message.reply_text('Sorry, please try again by sending the /rate command.')
+            return ConversationHandler.END
+        reply_keyboard = [[KeyboardButton(u"More of this 😍"), KeyboardButton(u"Please fix 😨")]]
+        update.message.reply_text('OK! How do you rate the container?',
+                                  reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
+        return 'RATE'
+
+    def conv_rate_done(self, bot, update):
+        feedback = 0
+        if 'More' in update.message.text:
+            feedback = +1
+        elif 'fix' in update.message.text:
+            feedback = -1
+        else:
+            return self.conv_rate_stop(bot, update)
+        ok = self.send_feedback(clean=feedback, user_id=update.message.from_user.id)
+        if ok:
+            update.message.reply_text('Thank you for your feedback!')
+        else:
+            update.message.reply_text('Oops, that didn\'t work out! Please try again later.')
+        return ConversationHandler.END
+
+    def conv_nearest_start(self, bot, update):
+        location_keyboard = [[KeyboardButton(text="send location", request_location=True)]]
+        update.message.reply_text('We\'ll get you to the next container ASAP! Please share your location.',
+                                  reply_markup=ReplyKeyboardMarkup(location_keyboard, one_time_keyboard=True))
+        return 'LOCATION_NEAR'
+
+    def conv_nearest_loc(self, bot, update):
+        user_location = update.message.location
+        url = 'http://10.13.144.90:5000/get_closest'
+        data_dict = {"lat": user_location.latitude, 'lng': user_location.longitude}
+        response = requests.post(url, data_dict)
+        container = response.json()['best_container']
+        pos = container['closest_container_pos']
+        id = container['closest_container_id']
+        descr = container['location_string'].rstrip()
+        s = ["%f,%f" % (data_dict['lat'], data_dict['lng']), pos]
+        route = calc_route(s, 'pedestrian')
+        img_url = route_to_image(route)
+        bot.sendPhoto(update.message.chat_id, img_url,
+                      caption=u'Container {} at {} is the best place for you to drop your litter! 🚮'.format(id, descr))
+        return ConversationHandler.END
+
+    def send_feedback(self, clean, user_id):
+        url = 'http://10.13.144.90:5000/feedback'
+        data_dict = {"user_id": user_id, "container_id": self.rate_container_id, "clean": clean}
+        response = requests.post(url, data_dict)
+        return response.ok
+
+    def on_help(self, bot, update):
+        update.message.reply_text(u'If you send /near I will provide the best available garbage container for you. \n'
+                                  u'If you send /rate, You can leave feedback for a container ☺️')
 
     def ask_for_cleanliness(self, bot, update):
         # https://apps.timwhitlock.info/emoji/tables/unicode
@@ -83,82 +146,16 @@ class FirstChatBot:
         reply_markup = InlineKeyboardMarkup(keyboard)
         update.message.reply_text('How clean is the bootle bank?', reply_markup=reply_markup)
 
-    # def ask_for_mode(self, bot, update):
-    #     keyboard = [[InlineKeyboardButton("By Foot", callback_data="mode, %i" % TransportationMode.FOOT),
-    #                  InlineKeyboardButton("By Car", callback_data="mode, %i" % TransportationMode.CAR)]]
-    #
-    #     reply_markup = InlineKeyboardMarkup(keyboard)
-    #     update.message.reply_text('How do you want to travel:', reply_markup=reply_markup)
-
-    def start(self, _, update):
+    def on_start(self, bot, update):
         """Send a message when the command /start is issued."""
-
         user_id = update.message.chat.id
         fname = update.message.chat.first_name
-
-        # user, created = User.objects.get_or_create(pk=user_id)
-        # user.first_name = fname
-        # user.message_count += 1
-        # user.save()
-
-        # if user_id in self.conversations:
-        #     update.message.reply_text("Hello Back " + fname)
-        # else:
-        #     self.conversations[user_id] = Conversation(user_id)
-        #     update.message.reply_text('Welcome ' + fname + '!')
-
-    def _process_cleanliness_answer(self, user_id, value):
-        return_text = "Cleanliness: {}".format(str(value)) + ' / 3'
-        return return_text
-
-    # def _process_mode_answer(self, user_id, value):
-    #     return_text = "Selected Transportation mode: {}".format(self._transport_mode_to_string(value))
-    #
-    #     if user_id in self.conversations:
-    #         self.conversations[user_id].mode = value
-    #     else:
-    #         self.conversations[user_id] = Conversation(user_id, mode=value)
-    #
-    #     return return_text
-
-    def mode_button_cb(self, bot, update):
-        assert isinstance(update, Update)
-        assert isinstance(update.callback_query, CallbackQuery)
-        user_id = update.callback_query.from_user.id
-
-        query = update.callback_query
-
-        ans = query.data.split(',')
-        cmd = str(ans[0])
-        value = int(ans[1])
-
-        if cmd == 'cl':
-            text = self._process_cleanliness_answer(user_id, value)
-        if cmd == 'mode':
-            text = self._process_cleanliness_answer(user_id, value)
-
-        bot.edit_message_text(text=text, chat_id=query.message.chat_id, message_id=query.message.message_id)
-
-    def text_cb(self, bot, update):
-        # bot.send_message(chat_id=update.message.chat_id, text="Hello! use /start")
-        self.ask_for_cleanliness(bot, update)
-        # self.ask_for_mode(bot, update)
+        update.message.reply_text(u'Hi {}! Can\'t wait to do my thing here 😎\n Send your location or type /help'.format(fname))
 
     def run(self):
         if not self.with_webhooks:
             self.updater.start_polling()
         self.updater.idle()
-
-    def got_location(self, bot, update):
-        assert isinstance(update, Update)
-        bot.send_message(chat_id=update.message.chat_id, text="Thanks for sharing your location")
-        print ("got location")
-        # self.ask_for_mode(bot, update)
-        # chat_id = update.message.chat.id
-        # ght = GetHereTile()
-        # fname = '/tmp/foo.jpg'
-        # ght.get_image(update.message.location.latitude, update.message.location.longitude, fname)
-        # bot.send_photo(chat_id=chat_id, photo=open(fname, 'rb'))
 
 
 if __name__ == "__main__":
