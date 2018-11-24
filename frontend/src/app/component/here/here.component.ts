@@ -3,6 +3,9 @@ import { ContainerService } from '../../service/container/container.service';
 import { Container } from '../../model/container';
 import {Coordinate} from '../../model/coordinate';
 import {Marker} from '../../model/marker';
+import { Subscription, timer, pipe } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+
 
 declare var H: any;
 
@@ -28,6 +31,8 @@ export class HereComponent implements OnInit {
     private route_marker = [];
     private directions = [];
     private group;
+    private is_route : boolean = false;
+    private instructions = [];
 
 
     //config
@@ -37,6 +42,9 @@ export class HereComponent implements OnInit {
     //These are the coordinates of Krefeld
     lat: any = "51.33276";
     lng: any = "6.58217";
+
+    subscription: Subscription;
+
 
   
 
@@ -84,19 +92,48 @@ export class HereComponent implements OnInit {
       this.behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
       this.ui = H.ui.UI.createDefault(this.map, defaultLayers, 'en-US');
       
-     //load container
+
+      this.subscription = timer(0, 5000).pipe(
+        switchMap(() => this.containerService.getContainer())
+      ).subscribe(result => this.parseContainer(this, result));
+      
+
+    }
+
+    /*private loadContainer(){
+      var that = this;
+
+      if(this.is_route){
+        return;
+      }
+    
       this.containerService.getContainer().subscribe(function(container){
+        
+      });
+    } */
+
+    private parseContainer(context, container) {
+        
+        context.clearContainer();
+
         for(var i = 0; i < container['containers'].length; i++){
           var item = container['containers'][i];
-          let c : Container = new Container(item.id, item.clean, item['level'], new Coordinate(item['lat'], item['lng']), item['loc_tr']);
-          that.container.push(c)
+          let c : Container = new Container(item.id, item.clean, item['level'], new Coordinate(item['lat'], item['lng']), item['loc_str']);
+          context.container.push(c)
         }
 
-        
-        that.renderContainer();
-      });
+        console.log("updated");
+        context.renderContainer();
+    }
 
-    
+    private clearContainer(){
+      if(this.container.length > 0){
+        for(var i = 0; i < this.container.length; i++){
+          this.map.removeObject(this.container[i]['obj_marker']);
+        }
+      }
+
+      this.container = [];
     }
 
     private renderContainer(){
@@ -155,16 +192,10 @@ export class HereComponent implements OnInit {
         // show info bubble
         that.ui.addBubble(bubble);
         bubble.open();
-        console.log(bubble);
         
       }, false);
 
-      //create marker
-
-      
-
-      //add to group
-      //group.addObject(m);
+     
 
 
       container['obj_marker'] = m;
@@ -174,7 +205,7 @@ export class HereComponent implements OnInit {
     }
 
     private setMarkerData(marker, container){
-      var html = "<div><h3>" + container.loc_tr + "</h3><dl><dt>ID:</dt><dd>" + container.id + "</dd><dt>Voll:</dt><dd>" + container.full + "%</dd><dt>Sauber:</dt><dd>" + container.clean + "</dd></dl></div>"
+      var html = "<div><h3>" + container.street + "</h3><dl><dt>ID:</dt><dd>" + container.id + "</dd><dt>Voll:</dt><dd>" + container.full + "%</dd><dt>Sauber:</dt><dd>" + container.clean + "</dd></dl></div>"
       //var html ='<div><a href=\'http://www.mcfc.co.uk\' >Manchester City</a>' +
       //  '</div><div >City of Manchester Stadium<br>Capacity: 48,000</div>';
       marker.setData(html);
@@ -273,17 +304,20 @@ export class HereComponent implements OnInit {
             if(data.response){
                 var length = 0;
                 let dirs = [];
+                let instructions = [];
 
                 for(var i = 0; i < data.response.route[0].leg.length; i++){
                   let directions = data.response.route[0].leg[i].maneuver;
+                  
                   dirs += directions;
 
                   for(var j = 0; j < directions.length; j++){
                     length += directions[j].length;
+                    instructions.push(directions[j].instruction)
                   }
                 }
                 
-                resolve({directions : dirs , length : length, data : data.response.route[0], container : container});
+                resolve({directions : dirs , length : length, data : data.response.route[0], container : container, instructions : instructions});
             }
 
             
@@ -351,7 +385,7 @@ export class HereComponent implements OnInit {
       
     }
 
-    private displayRoute(length, directions, data, container){
+    private displayRoute(length, directions, data, container, instructions){
       this.map.removeObject(container['obj_marker']);
       this.addRouteHighlightMarker(container.coordinates.lat, container.coordinates.ltd);
 
@@ -376,6 +410,8 @@ export class HereComponent implements OnInit {
       //Add
       this.group.addObjects([lines]);
       this.map.setViewBounds(this.group.getBounds());
+
+      this.instructions = instructions;
     }
 
     private calculateMyRoute(){
@@ -386,8 +422,10 @@ export class HereComponent implements OnInit {
         return;
       }
 
+      this.is_route = true;
+
       this.getMinRoute().then(function(route){
-        that.displayRoute(route['length'], route['directions'], route['data'], route['container']);
+        that.displayRoute(route['length'], route['directions'], route['data'], route['container'], route['instructions']);
       });
     }
 

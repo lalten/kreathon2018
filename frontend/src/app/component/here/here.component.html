@@ -1,7 +1,15 @@
 <div #map id="map"></div>
 
-<div id="action_wrapper">
+<div id="right_wrapper">
   <button (click)="addRouteStart()">Punkt zu meiner Route hinzufügen</button>
   <button (click)="calculateMyRoute()">Meine Route kalkulieren</button>
-  <button (click)="planRoute()">Abholroute planen</button>
+
+  <div *ngIf="instructions.length > 0" id="direction_wrapper">
+    <h3>Route:</h3>
+    <ul id="instructions">
+      <li *ngFor = "let ins of instructions" [innerHTML]="ins">
+  
+      </li>
+    </ul>
+  </div>
 </div>
