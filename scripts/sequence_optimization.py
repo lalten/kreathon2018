@@ -56,7 +56,6 @@ def route_to_image(route):
     f.close()
 
 
-
 def get_positions(route):
     positions = list()
     for r in route:
@@ -69,38 +68,39 @@ def get_positions(route):
         positions.append("%f,%f" % (c.lat, c.lng))
     return positions
 
-def calc_route(positions):
+def calc_route(positions, mode='car'):
     app_data = {"app_id": app_id, "app_code": app_code}
-    app_data['mode'] = 'fastest;pedestrian;traffic:disabled'
+    app_data['mode'] = 'fastest;'+mode+';traffic:disabled'
 
     for i, p in enumerate(positions):
         app_data['waypoint' + str(i)] = p
-        if i == 10:
-            break
+        # if i == 10:
+        #     break
 
     # print (app_data)
     r = requests.get(calc_route_url, app_data)
+    # r = requests.get(route_url, app_data)
+
     # print r.status_code
     # print r.json()
 
     route = r.json()
     return route
 
-positions = get_positions(monday_route)
-
-
-start=positions[10]
-for i, p in enumerate(positions):
-    # if i == 0:
-    #     continue
-    # print start, p
-
-    r = calc_route([start, p])
-    d_sum = 0
-    for m in r['response']['route'][0]['leg'][0]['maneuver']:
-        d_sum += m['length']
-
-    print d_sum
+# positions = get_positions(monday_route)
+#
+# start=positions[10]
+# for i, p in enumerate(positions):
+#     # if i == 0:
+#     #     continue
+#     # print start, p
+#
+#     r = calc_route([start, p])
+#     d_sum = 0
+#     for m in r['response']['route'][0]['leg'][0]['maneuver']:
+#         d_sum += m['length']
+#
+#     print d_sum
 
 
     # break
