@@ -153,27 +153,29 @@ def store_feedback():
     user.first_name = d['first_name']
     user.save()
 
-    print user, created
-    lat, lng = d['lat'], d['lng']
+    print d
 
-    feedback_pos = (lat, lng)
-
-    # get closest container:
-    containers = Container.objects.all()
-    print (len(containers))
-    min_dist = -1
-    best_id = -1
-    for c in containers:
-        print (c.id)
-
-        container_pos = (c.lat, c.lng)
-        dist = distance(feedback_pos, container_pos).m
-        print "meters", dist
-
-        # d = pow(lat-c.lat, 2) + pow(lng-c.lng, 2)
-        if min_dist < 0 or dist < min_dist:
-            min_dist = dist
-            best_id = c.id
+    # print user, created
+    # lat, lng = d['lat'], d['lng']
+    #
+    # feedback_pos = (lat, lng)
+    #
+    # # get closest container:
+    # containers = Container.objects.all()
+    # print (len(containers))
+    # min_dist = -1
+    # best_id = -1
+    # for c in containers:
+    #     print (c.id)
+    #
+    #     container_pos = (c.lat, c.lng)
+    #     dist = distance(feedback_pos, container_pos).m
+    #     print "meters", dist
+    #
+    #     # d = pow(lat-c.lat, 2) + pow(lng-c.lng, 2)
+    #     if min_dist < 0 or dist < min_dist:
+    #         min_dist = dist
+    #         best_id = c.id
 
     f = Feedback(user=user, lat=lat, lng=lng, container_id=best_id, rating=d['clean'])
     f.save()

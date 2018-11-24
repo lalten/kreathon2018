@@ -153,7 +153,9 @@ class FirstChatBot:
         update.message.reply_text(u'Hi {}! Can\'t wait to do my thing here 😎\n Send your location or type /help'.format(fname))
 
     def run(self):
+        print ("starting")
         if not self.with_webhooks:
+            print ("polling")
             self.updater.start_polling()
         self.updater.idle()
 
