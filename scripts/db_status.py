@@ -27,7 +27,7 @@ def all_empty():
         m = Measurement(container=c, raw_reading=c.reading_sonic_empty+0.1)
         m.save()
 
-# all_empty()
+all_empty()
 
 def fill(c_id, reading = 0.0):
     c = Container.objects.get(id=c_id)
