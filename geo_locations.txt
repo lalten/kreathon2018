@@ -15,6 +15,7 @@
 23:51.319230,6.588010:Oberbruchstraße, ecke Siemesdyk
 25:51.322891,6.580700:Fütingsweg, höhe HNr 20
 26:51.316500,6.576190:Kölner Straße, Ecke Untergath / Hochhaus
+27:51.314776,6.553790:Lehmheide ggue Friedhof
 28:51.312031,6.558730:Obergath, ecke Wehrhahnweg 39a
 29:51.308300,6.565790:Remscheider Straße, höhe HNr. 42
 30:51.308690,6.589100:Hafelsstraße, Ecke Kimplerstraße / am Kindergarten
@@ -61,4 +62,3 @@
 90:51.371940,6.497830:Leidener Straße, ecke Dünkirchener Straße
 91:51.320091,6.552320:Alte Gladbacher Str.36, Höhe Haus Nr. 36
 96:51.341310,6.599210:Uerdinger Straße, Zoo Parkplatz
-
