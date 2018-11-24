@@ -35,14 +35,18 @@ class MqttDBBridge():
     @staticmethod
     def _process_measurement(msg):
         spl = msg.payload.split('_')
-        if not len(spl) == 2:
+        if not len(spl) == 4:
             print("Received malformed message: %s" % msg.payload)
             return
 
         try:
-            container_id, reading_msg = map(int, spl)
+            container_id, reading_msg, status, battery = map(int, spl)
         except ValueError:
             print("Received malformed message: %s" % msg.payload)
+            return
+
+        if status > 0:
+            print "Not storing for invalid data: ", msg.payload
             return
 
         reading = reading_msg / 1000.0  # fixed comma

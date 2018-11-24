@@ -13,6 +13,7 @@ class Container(models.Model):
     # id
     lng = models.FloatField(default=-1)
     lat = models.FloatField(default=-1)
+    location_string = models.CharField(max_length=300, default="no_location_string")
 
     # recursive Fkey: https://docs.djangoproject.com/en/dev/ref/models/fields/#foreignkey
     parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
@@ -25,14 +26,14 @@ class Container(models.Model):
         min_ = min(self.reading_sonic_full, self.reading_sonic_empty)
         max_ = max(self.reading_sonic_full, self.reading_sonic_empty)
 
-        if not (min_ < reading < max_):
+        if not (min_ <= reading <= max_):
             print ("READING NOT IN RANGE: %f, %f, %f" % (min_, reading, max_))
             return False
 
         return True
 
     def __str__(self):
-        return "Container %i at %.5f %.5f, empty: %.2f, full: %.2f" % (self.id, self.lng, self.lat,
+        return "Container %i at %.5f %.5f, empty: %.2f, full: %.2f" % (self.id, self.lat, self.lng,
                                                                 self.reading_sonic_empty,
                                                                 self.reading_sonic_full)
 
