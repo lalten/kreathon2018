@@ -45,9 +45,12 @@ class MqttDBBridge():
             print("Received malformed message: %s" % msg.payload)
             return
 
-        if status > 0:
+        # if status > 0:
+        #     print "Not storing for invalid data: ", msg.payload
+        #     return
+
+        if not (8 < reading_msg < 10000):
             print "Not storing for invalid data: ", msg.payload
-            return
 
         reading = reading_msg / 1000.0  # fixed comma
 

@@ -34,7 +34,7 @@ def waypoints_to_image(way_points):
 
     # app_data['ctr'] = way_points[0]
 
-    app_data['lw'] = 20  # line width
+    app_data['lw'] = 10  # line width
 
     r = requests.get(route_url, app_data)
 
