@@ -125,8 +125,7 @@ export class ContainerService {
   }
   
   public getRoundRouteData() : Observable<any> {
-    return null;
-    //return this.http.get<Container[]>('/optimized');
+    return this.http.get<Container[]>('/optimized');
   }
   
 }

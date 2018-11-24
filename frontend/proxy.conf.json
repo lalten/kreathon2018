@@ -7,6 +7,15 @@
     "pathRewrite": {
       "^/containers": ""
     }
+},
+"/optimized" : {
+"target" : "http://10.13.147.145:5000",
+"secure" : false,
+ "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/optimized": ""
+    }
 }
 }
  
