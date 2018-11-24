@@ -155,6 +155,9 @@ def store_feedback():
 
     print d
 
+    c = Container.objects.get(id=d['container_id'])
+
+
     # print user, created
     # lat, lng = d['lat'], d['lng']
     #
@@ -177,7 +180,7 @@ def store_feedback():
     #         min_dist = dist
     #         best_id = c.id
 
-    f = Feedback(user=user, lat=lat, lng=lng, container_id=best_id, rating=d['clean'])
+    f = Feedback(user=user, lat=c.lat, lng=c.lng, container_id=c.id, rating=d['clean'])
     f.save()
     print "created new Feedback for container %i" % best_id
 

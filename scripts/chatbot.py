@@ -15,7 +15,8 @@ from here_connector import calc_route, route_to_image
 
 
 class FirstChatBot:
-    TOKEN = '767777347:AAHWBUNY_eCCSftpRSNI4Tr7x-eorSv0UQo'
+    # TOKEN = '767777347:AAHWBUNY_eCCSftpRSNI4Tr7x-eorSv0UQo'
+    TOKEN = '797064242:AAGPbRtXlyShFmvFbneLKHigMHzMpzSjtEE'
     rest_url = 'http://10.13.144.90:5000/containers'
 
     def __init__(self):
@@ -153,9 +154,8 @@ class FirstChatBot:
         update.message.reply_text(u'Hi {}! Can\'t wait to do my thing here 😎\n Send your location or type /help'.format(fname))
 
     def run(self):
-        print ("starting")
         if not self.with_webhooks:
-            print ("polling")
+            print ("start polling")
             self.updater.start_polling()
         self.updater.idle()
 
