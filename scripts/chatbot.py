@@ -73,7 +73,7 @@ class FirstChatBot:
         url = 'http://10.13.144.90:5000/get_closest'
         data_dict = {"lat": user_location.latitude, 'lng': user_location.longitude}
         response = requests.post(url, data_dict)
-        container = response.json()['best_container']
+        container = response.json()['closest_container']
         self.rate_container_id = container['closest_container_id']
         descr = container['location_string'].rstrip()
         reply_keyboard = [[KeyboardButton(u"Yes 👌"), KeyboardButton(u"No 🚫")]]
@@ -98,7 +98,7 @@ class FirstChatBot:
             feedback = -1
         else:
             return self.conv_rate_stop(bot, update)
-        ok = self.send_feedback(clean=feedback, user_id=update.message.from_user.id)
+        ok = self.send_feedback(clean=feedback, user=update.message.from_user)
         if ok:
             update.message.reply_text('Thank you for your feedback!')
         else:
@@ -113,7 +113,7 @@ class FirstChatBot:
 
     def conv_nearest_loc(self, bot, update):
         user_location = update.message.location
-        url = 'http://10.13.144.90:5000/get_closest'
+        url = 'http://10.13.144.90:5000/get_best'
         data_dict = {"lat": user_location.latitude, 'lng': user_location.longitude}
         response = requests.post(url, data_dict)
         container = response.json()['best_container']
@@ -127,9 +127,9 @@ class FirstChatBot:
                       caption=u'Container {} at {} is the best place for you to drop your litter! 🚮'.format(id, descr))
         return ConversationHandler.END
 
-    def send_feedback(self, clean, user_id):
+    def send_feedback(self, clean, user):
         url = 'http://10.13.144.90:5000/feedback'
-        data_dict = {"user_id": user_id, "container_id": self.rate_container_id, "clean": clean}
+        data_dict = {"user_id": user.id, "first_name": user.first_name, "container_id": self.rate_container_id, "clean": clean}
         response = requests.post(url, data_dict)
         return response.ok
 
