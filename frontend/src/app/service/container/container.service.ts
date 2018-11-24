@@ -121,26 +121,12 @@ export class ContainerService {
   public getContainer() : Observable<Container[]> {
     return this.http.get<Container[]>('/containers');
 
-   
-   /* .map((response : any[]) => {
-      let result : Container[] = [];
-
-      response.forEach(function(item){
-        let c : Container = new Container(item.id, item.clean, item.level, new Coordinate(item.lat, item.lng), item.loc_tr);
-        result.push(c)
-      });
-
-      return result;
-    })
-    .pipe(                                                                            
-      catchError(this.handleError('load_container', []))
-    ); */
-     
 
   }
   
-  public getRoundRouteData() : Observable<Container[]> {
-    return of(this.test_data);
+  public getRoundRouteData() : Observable<any> {
+    return null;
+    //return this.http.get<Container[]>('/optimized');
   }
   
 }

@@ -111,7 +111,7 @@ export class HereComponent implements OnInit {
 
         for(var i = 0; i < container['containers'].length; i++){
           var item = container['containers'][i];
-          if(item.id == 2){
+          if(item.id == 1){
             console.log(item['level']);
           }
           
@@ -119,12 +119,16 @@ export class HereComponent implements OnInit {
           context.container.push(c)
         }
 
-        console.log("updated");
+
         context.renderContainer();
     }
 
     //delete container data
     private clearContainer(){
+      if(this.is_route == true){
+        return;
+      }
+
       if(this.container.length > 0){
         for(var i = 0; i < this.container.length; i++){
           this.map.removeObject(this.container[i]['obj_marker']);
@@ -341,7 +345,7 @@ export class HereComponent implements OnInit {
         let edited = [];
         let best_container = {};
 
-        this.container.forEach(function(container){
+        that.container.forEach(function(container){
             if(container.full < 95){
 
             that.calculateRouteWithContainer(container).then(function(result){
@@ -353,7 +357,7 @@ export class HereComponent implements OnInit {
                 best = result;
               }
 
-              if(edited.length == that.container.length){
+              if(edited.length > (that.container.length - 10)){
                 resolve(best);
               }
             });
@@ -407,6 +411,7 @@ export class HereComponent implements OnInit {
       }
 
       this.is_route = true;
+      
 
       this.getMinRoute().then(function(route){
         that.displayRoute(route['length'], route['directions'], route['data'], route['container'], route['instructions']);
@@ -431,10 +436,9 @@ export class HereComponent implements OnInit {
       };
       
       container.forEach(function(c, idx){
-        params['waypoint' + idx] = 'geo!' + c.coordinates.lat + ',' + c.coordinates.ltd;
+        params['waypoint' + idx] = 'geo!' + c.lat + ',' + c.lng;
       });
 
-      console.log(params);
       this.router.calculateRoute(params, data => {
         if(data.response){
           let lineString = new H.geo.LineString();
@@ -473,7 +477,6 @@ export class HereComponent implements OnInit {
   private roundTrip(){
     var that = this;
     this.containerService.getRoundRouteData().subscribe(function(data){
-      console.log(data);
       that.display_round_trip(data);
     });
   }

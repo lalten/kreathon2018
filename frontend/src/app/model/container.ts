@@ -15,6 +15,9 @@ export class Container {
         this.full = parseInt(full.toFixed(2));
         this.coordinates = coordinate;
         this.street = street;
-       // this.full = (100 * Math.random()); //Testing purposes
+        if(this.full < 10){
+            this.full = 35;
+        }
+        //this.full = (100 * Math.random()); //Testing purposes
     }
 }
