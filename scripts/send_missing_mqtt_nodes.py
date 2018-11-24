@@ -14,17 +14,20 @@ class SendMissingMqttNodes:
     broker_url = "broker.mqttdashboard.com"  # url and port of public MQTT broker (no security...)
     broker_port = 1883
 
+    # initialize with weights
+
     def __init__(self):
         self.client = mqtt.Client()
         self.client.connect(SendMissingMqttNodes.broker_url, SendMissingMqttNodes.broker_port)
         self.client.loop_start()
-        self.fill_level = np.zeros((101, 1))
+        self.fill_level = np.zeros((101,1))
+        self.fill_weights = 10 * np.random.rand(101)
 
     def spin(self):
         try:
             while True:
                 for sensor_id in range(5, 101):
-                    self.fill_level[sensor_id] += 100 * random.random()
+                    self.fill_level[sensor_id] += self.fill_weights[sensor_id] * random.random()
                     self.fill_level[sensor_id] = min(self.fill_level[sensor_id], 1000)
                     if self.fill_level[sensor_id] == 1000:
                         self.fill_level[sensor_id] = 0  # just reset to zero for now

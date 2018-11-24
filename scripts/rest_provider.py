@@ -50,8 +50,8 @@ def get_container_info():
     return msg
 
 
-@app.route('/get_closest', methods=['GET'])
-def
+# @app.route('/get_closest', methods=['GET'])
+# def
 
 
 @app.route('/containers', methods=['GET'])
