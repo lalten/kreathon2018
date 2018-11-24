@@ -205,7 +205,7 @@ export class HereComponent implements OnInit {
     }
 
     private setMarkerData(marker, container){
-      var html = "<div><h3>" + container.street + "</h3><dl><dt>ID:</dt><dd>" + container.id + "</dd><dt>Voll:</dt><dd>" + container.full + "%</dd><dt>Sauber:</dt><dd>" + container.clean + "</dd></dl></div>"
+      var html = "<div class='bubble'><h3>" + container.street + "</h3><dl><dt>ID:</dt><dd>" + container.id + "</dd><dt>Voll:</dt><dd>" + container.full + "%</dd><dt>Sauber:</dt><dd>" + container.clean + "</dd></dl></div>"
       //var html ='<div><a href=\'http://www.mcfc.co.uk\' >Manchester City</a>' +
       //  '</div><div >City of Manchester Stadium<br>Capacity: 48,000</div>';
       marker.setData(html);

@@ -12,7 +12,7 @@ export class Container {
     public constructor(id : number, clean : number, full : number, coordinate : Coordinate, street : string){
         this.id = id;
         this.clean = clean;
-        this.full = full;
+        this.full = parseInt(full.toFixed(2));
         this.coordinates = coordinate;
         this.street = street;
         //this.full = (100 * Math.random()); //Testing purposes
