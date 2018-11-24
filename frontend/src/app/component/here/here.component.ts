@@ -100,7 +100,29 @@ export class HereComponent implements OnInit {
     }
 
     private addMarkerForContainer(container : Container){
-      let m = new H.map.Marker({'lat' : container.coordinates.lat, 'lng' : container.coordinates.ltd});
+      var url;
+      if(container.full > 95){
+        url = "./assets/marker_full.png"
+      }
+      if(container.full > 80){
+        url = "./assets/marker_80.png"
+      }
+      else if(container.full > 60){
+        url = "./assets/marker_60.png"
+      }
+      else if(container.full > 40){
+        url = "./assets/marker_40.png"
+      }
+      else if(container.full >20){
+        url = "./assets/marker_20.png"
+      }
+      else {
+        url = "./assets/marker_empty.png"
+      }
+      
+      var icon = new H.map.Icon(url, {size: {w: 32, h: 32}});
+
+      let m = new H.map.Marker({'lat' : container.coordinates.lat, 'lng' : container.coordinates.ltd}, {icon : icon});
       container['obj_marker'] = m;
       //add to map
       this.map.addObject(m);
