@@ -36,7 +36,7 @@ class SendMissingMqttNodes:
                     this_fill_level = int(round(self.fill_level[sensor_id]))
                     payload_str = '{}_{}_{}_{}\n'.format(sensor_id, this_fill_level, range_status, bat_mv)
                     self.client.publish(SendMissingMqttNodes.measurement_topic, payload_str)
-                time.sleep(1)
+                time.sleep(5)
         except KeyboardInterrupt:
             pass
 

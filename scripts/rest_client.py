@@ -3,7 +3,7 @@
 
 
 import requests
-from sequence_optimization import calc_route, route_to_image
+from here_connector import calc_route, route_to_image
 
 # url = 'http://10.13.144.90:5000/containers'
 # data_dict = {"user":"asddd"}
@@ -27,7 +27,7 @@ js = response.json()['best_container']
 
 pos = js['closest_container_pos']
 dist = js['dist']
-print "dist", dist
+print js
 s = ["%f,%f" % (data_dict['lat'], data_dict['lng']), pos]
 route = calc_route(s, 'pedestrian')
 route_to_image(route)

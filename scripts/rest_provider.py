@@ -93,6 +93,7 @@ def get_closest_container():
     answer['dist'] = min_dist
     answer['closest_container_id'] = closest_container_id
     answer['closest_container_pos'] = best_pos
+    answer['location_string'] = Container.objects.get(id=closest_container_id).location_string
 
     response = flask.jsonify({'best_container': answer})
     response.headers.add('Access-Control-Allow-Origin', '*')
