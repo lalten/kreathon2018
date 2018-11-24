@@ -9,4 +9,3 @@ data_dict = {"user":"asddd"}
 
 response = requests.get(url, data_dict)
 print response.json()['containers'][0]
-
