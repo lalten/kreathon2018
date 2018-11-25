@@ -1,9 +1,10 @@
 # kreathon2018
-Smart Garbage Containers for Krefeld
+Smart Garbage Containers for Krefeld.
 
+Placed 3rd in [Kreathon 2018](https://kreathon-krefeld.de/) Hackathon.
+See the presentation [Video](https://www.facebook.com/SWK.Krefeld/videos/995938370589888/?t=349) and [Slides](https://docs.google.com/presentation/d/1hnPSgH4FVmWg0iBtqUmQ8y2B10gKDdMhcCNe62sMrZg/edit?usp=sharing).
 
-Nikolas Engelhard, Laurenz Altenmueller, Felix Froehling
-
+Built with ❤️ by [@NikolasE](https://github.com/NikolasE), [@ffroehling](https://github.com/ffroehling) and [@lalten](https://github.com/lalten).
 
 ## Die Wichtigtsen Progamme und Ordner ##
 
