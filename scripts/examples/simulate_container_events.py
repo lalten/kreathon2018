@@ -23,6 +23,10 @@ class SendMissingMqttNodes:
         self.fill_level = np.zeros((101,1))
         self.fill_weights = 10 * np.random.rand(101)
 
+    # def full_random(self):
+    #     for sensor_id in range(5, 101):
+    #         r = random.random()*1000.0
+
     def spin(self):
         try:
             while True:

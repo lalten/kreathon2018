@@ -95,7 +95,7 @@ class FirstChatBot:
                                   "Vielen Dank fuer die Information")
 
     def conv_rate_start(self, bot, update):
-        print bot, update
+        # print bot, update
         print type(update.message)
         update.message.reply_text('Which container do you want to provide feedback for? '
                                   'Please send the location of the container you want to rate.')
@@ -165,10 +165,11 @@ class FirstChatBot:
         return ConversationHandler.END
 
     def send_feedback(self, clean, user):
-        url = 'http://10.13.144.90:5000/feedback'
-        data_dict = {"user_id": user.id, "first_name": user.first_name, "container_id": self.rate_container_id, "clean": clean}
-        response = requests.post(url, data_dict)
-        return response.ok
+        return True
+        # url = 'http://10.13.144.90:5000/feedback'
+        # data_dict = {"user_id": user.id, "first_name": user.first_name, "container_id": self.rate_container_id, "clean": clean}
+        # response = requests.post(url, data_dict)
+        # return response.ok
 
     def on_help(self, bot, update):
         update.message.reply_text(u'If you send /near I will provide the best available garbage container for you. \n'

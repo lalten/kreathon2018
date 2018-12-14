@@ -71,5 +71,9 @@ class MqttDBBridge():
 
 
 if __name__ == "__main__":
-    bridge = MqttDBBridge()
-    bridge.spin()
+    while True:
+        try:
+            bridge = MqttDBBridge()
+            bridge.spin()
+        except Exception:
+            continue
